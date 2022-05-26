@@ -55,6 +55,17 @@ function NavBar({ email }) {
               <li className="nav-item">
                 <Link
                   className="nav-link"
+                  to="/transfer"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="bottom"
+                  title="Transfer your money"
+                >
+                  Transfer
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link"
                   to="/all-data"
                   data-bs-toggle="tooltip"
                   data-bs-placement="bottom"

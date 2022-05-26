@@ -6,8 +6,9 @@ import Login from "./components/login";
 import CreateAccount from "./components/createaccount";
 import Deposit from "./components/deposit";
 import Withdraw from "./components/withdraw";
+import Transfer from "./components/transfer";
 import AllData from "./components/alldata";
-import { auth, db } from "./firebase";
+import { auth, db, FieldValue } from "./firebase";
 
 function App() {
   const [user, setUser] = React.useState({});
@@ -27,7 +28,15 @@ function App() {
   React.useEffect(
     () =>
       db.collection("users").onSnapshot(async (snap) => {
-        setUsers(await Promise.all(snap.docs.map((doc) => doc.data())));
+        const usersdata = [];
+        await Promise.all(
+          snap.docs.map(async (doc) => {
+            const userdata = await doc.data();
+            userdata.uid = doc.id;
+            usersdata.push(userdata);
+          })
+        );
+        setUsers(usersdata);
       }),
     []
   );
@@ -47,7 +56,20 @@ function App() {
 
   function updateBalance(amount) {
     if (user.uid) {
-      db.doc(`users/${user.uid}`).update({ balance: balance + amount });
+      db.doc(`users/${user.uid}`).update({
+        balance: FieldValue.increment(amount),
+      });
+    }
+  }
+
+  function transferBalance(amount, destuid) {
+    if (user.uid) {
+      db.doc(`users/${user.uid}`).update({
+        balance: FieldValue.increment(-amount),
+      });
+      db.doc(`users/${destuid}`).update({
+        balance: FieldValue.increment(amount),
+      });
     }
   }
 
@@ -74,6 +96,17 @@ function App() {
               user={user}
               balance={balance}
               updateBalance={updateBalance}
+            />
+          }
+        />
+        <Route
+          path="transfer"
+          element={
+            <Transfer
+              user={user}
+              users={users}
+              balance={balance}
+              transferBalance={transferBalance}
             />
           }
         />

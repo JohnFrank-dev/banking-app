@@ -17,6 +17,7 @@ function AllData({ user, users }) {
             <th scope="col">#</th>
             <th scope="col">Name</th>
             <th scope="col">Email</th>
+            <th scope="col">uid</th>
             <th scope="col">Password</th>
             <th scope="col">Account Number</th>
             <th scope="col">Balance</th>
@@ -28,6 +29,7 @@ function AllData({ user, users }) {
               <th scope="row">{index + 1}</th>
               <td>{user.name}</td>
               <td>{user.email}</td>
+              <td>{user.uid}</td>
               <td>{user.password}</td>
               <td>{user.accountNumber}</td>
               <td>${user.balance}</td>
