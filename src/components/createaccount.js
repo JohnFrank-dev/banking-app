@@ -29,7 +29,7 @@ function CreateAccount({ users }) {
     var number;
     do {
       number = Math.round(10 ** 10 * Math.random());
-    } while (users.find((user) => user.account == number));
+    } while (users.find((user) => user.account === number));
     return number;
   }
 
