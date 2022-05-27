@@ -1,6 +1,6 @@
 import React from "react";
 import Card from "./card";
-import { auth, db } from "../firebase";
+import { auth, GoogleAuthProvider, db } from "../firebase";
 
 function CreateAccount({ users }) {
   const [show, setShow] = React.useState(true);
@@ -8,6 +8,7 @@ function CreateAccount({ users }) {
   const [name, setName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
 
   function validate(field, label, minLength) {
     if (!field) {
@@ -48,6 +49,30 @@ function CreateAccount({ users }) {
       })
     );
     setShow(false);
+  }
+
+  function loginGoogle() {
+    setLoading(true);
+    const accountNumber = generateAccountNumber();
+    auth
+      .signInWithPopup(new GoogleAuthProvider())
+      .then(({ user }) => {
+        db.doc(`users/${user.uid}`).set({
+          balance: 0,
+          name: user.displayName,
+          email: user.email,
+          password,
+          accountNumber,
+        });
+        setLoading(false);
+        setStatus("Successfull signed in!");
+        setTimeout(() => setStatus(""), 3000);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setStatus("Error: " + e.code);
+        setTimeout(() => setStatus(""), 3000);
+      });
   }
 
   function clearForm() {
@@ -103,9 +128,18 @@ function CreateAccount({ users }) {
                 type="submit"
                 className="btn btn-light"
                 onClick={handleCreate}
-                disabled={!name || !email || !password}
+                disabled={!name || !email || !password || loading}
               >
                 Create Account
+              </button>
+              <br />
+              <button
+                type="submit"
+                className="btn btn-light mt-2"
+                disabled={loading}
+                onClick={loginGoogle}
+              >
+                Sign up with Google
               </button>
             </>
           ) : (

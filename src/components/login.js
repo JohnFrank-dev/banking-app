@@ -1,8 +1,8 @@
 import React from "react";
 import Card from "./card";
-import { auth } from "../firebase";
+import { auth, GoogleAuthProvider } from "../firebase";
 
-function Login({ email }) {
+function Login({ email, users }) {
   const [status, setStatus] = React.useState("");
   const [loginEmail, setLoginEmail] = React.useState("");
   const [loginPassword, setLoginPassword] = React.useState("");
@@ -24,6 +24,22 @@ function Login({ email }) {
     setLoading(true);
     auth
       .signInWithEmailAndPassword(loginEmail, loginPassword)
+      .then(() => {
+        setLoading(false);
+        setStatus("Successfull signed in!");
+        setTimeout(() => setStatus(""), 3000);
+      })
+      .catch((e) => {
+        setLoading(false);
+        setStatus("Error: " + e.code);
+        setTimeout(() => setStatus(""), 3000);
+      });
+  }
+
+  function loginGoogle() {
+    setLoading(true);
+    auth
+      .signInWithPopup(new GoogleAuthProvider())
       .then(() => {
         setLoading(false);
         setStatus("Successfull signed in!");
@@ -92,6 +108,15 @@ function Login({ email }) {
                 onClick={handleLogin}
               >
                 Login
+              </button>
+              <br />
+              <button
+                type="submit"
+                className="btn btn-light mt-2"
+                disabled={loading}
+                onClick={loginGoogle}
+              >
+                Login with Google
               </button>
             </>
           ) : (
